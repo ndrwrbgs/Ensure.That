@@ -6,16 +6,6 @@ namespace EnsureThat
     public static class ExceptionFactory
     {
         [NotNull]
-        [Pure]
-        public static ArgumentException CreateForParamValidation([NotNull] Param param, string message)
-            => new ArgumentException(message, param.Name);
-
-        [NotNull]
-        [Pure]
-        public static ArgumentNullException CreateForParamNullValidation([NotNull] Param param, string message)
-            => new ArgumentNullException(param.Name, message);
-
-        [NotNull]
         public static Exception CreateForComparableParamValidation<T>([NotNull] Param<T> param, string message)
         {
             if (param.ExceptionFn != null)

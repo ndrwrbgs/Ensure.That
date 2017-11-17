@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 
 namespace EnsureThat
 {
-    // TODO: these will all be [Pure] when/if Param is immutable
     public static class ParamExtensions
     {
         [Pure]
@@ -12,32 +11,44 @@ namespace EnsureThat
             return param;
         }
 
+        [Pure]
         public static Param<T> WithExtraMessageOf<T>(this Param<T> param, string message)
         {
-            param.ExtraMessageFn = p => message;
-
-            return param;
+            return new Param<T>(
+                param.Name,
+                param.Value,
+                p => message,
+                param.ExceptionFn);
         }
 
+        [Pure]
         public static Param<T> WithExtraMessageOf<T>(this Param<T> param, [NotNull] Func<string> messageFn)
         {
-            param.ExtraMessageFn = p => messageFn();
-
-            return param;
+            return new Param<T>(
+                param.Name,
+                param.Value,
+                p => messageFn(),
+                param.ExceptionFn);
         }
 
+        [Pure]
         public static Param<T> WithExtraMessageOf<T>(this Param<T> param, Func<Param<T>, string> messageFn)
         {
-            param.ExtraMessageFn = messageFn;
-
-            return param;
+            return new Param<T>(
+                param.Name,
+                param.Value,
+                messageFn,
+                param.ExceptionFn);
         }
 
+        [Pure]
         public static Param<T> WithException<T>(this Param<T> param, Func<Param<T>, Exception> exceptionFn)
         {
-            param.ExceptionFn = exceptionFn;
-
-            return param;
+            return new Param<T>(
+                param.Name,
+                param.Value,
+                param.ExtraMessageFn,
+                exceptionFn);
         }
     }
 }
