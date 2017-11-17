@@ -10,6 +10,7 @@ namespace EnsureThat
     {
         [NotNull]
         [DebuggerStepThrough]
+        [Obsolete("Prefer EquatableArg.Is where possible")]
         public T Is<T>([NotNull] T value, T expected, [InvokerParameterName] string paramName = Param.DefaultName) where T : IComparable<T>
         {
             if (!Ensure.IsActive)
@@ -22,11 +23,11 @@ namespace EnsureThat
         }
 
         [DebuggerStepThrough]
+        [Obsolete("Prefer EquatableArg.Is where possible")]
         public T Is<T>(T value, T expected, [NotNull] IComparer<T> comparer, [InvokerParameterName] string paramName = Param.DefaultName)
         {
             if (!Ensure.IsActive)
                 return value;
-
             if (!value.IsEq(expected, comparer))
                 throw new ArgumentException(ExceptionMessages.Comp_Is_Failed.Inject(value, expected), paramName);
 
@@ -35,6 +36,7 @@ namespace EnsureThat
 
         [NotNull]
         [DebuggerStepThrough]
+        [Obsolete("Prefer EquatableArg.IsNot where possible")]
         public T IsNot<T>([NotNull] T value, T expected, [InvokerParameterName] string paramName = Param.DefaultName) where T : IComparable<T>
         {
             if (!Ensure.IsActive)
@@ -47,6 +49,7 @@ namespace EnsureThat
         }
 
         [DebuggerStepThrough]
+        [Obsolete("Prefer EquatableArg.IsNot where possible")]
         public T IsNot<T>(T value, T expected, [NotNull] IComparer<T> comparer, [InvokerParameterName] string paramName = Param.DefaultName)
         {
             if (!Ensure.IsActive)

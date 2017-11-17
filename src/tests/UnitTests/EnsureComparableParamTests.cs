@@ -296,14 +296,14 @@ namespace UnitTests
             // sa < Sb < sc when case sensitive, but not when case insensitive
             var sa = "sa";
             var Sa = "Sa";
-            IComparer<string> ordinal = StringComparer.Ordinal;
+            var ordinal = StringComparer.Ordinal;
             ShouldThrow<ArgumentException>(
                 string.Format(ExceptionMessages.Comp_Is_Failed, sa, Sa),
                 () => Ensure.That(sa, ParamName).Is(Sa, ordinal),
                 () => EnsureArg.Is(sa, Sa, ordinal, ParamName));
 
             // Validate with comparer (order is reversed)
-            IComparer<string> ignoreCase = StringComparer.OrdinalIgnoreCase;
+            var ignoreCase = StringComparer.OrdinalIgnoreCase;
             ShouldNotThrow(
                 () => Ensure.That(sa, ParamName).Is(Sa, ignoreCase),
                 () => EnsureArg.Is(sa, Sa, ignoreCase, ParamName));
@@ -336,13 +336,13 @@ namespace UnitTests
             // sa < Sb < sc when case sensitive, but not when case insensitive
             var sa = "sa";
             var Sa = "Sa";
-            IComparer<string> ordinal = StringComparer.Ordinal;
+            var ordinal = StringComparer.Ordinal;
             ShouldNotThrow(
                 () => Ensure.That(sa, ParamName).IsNot(Sa, ordinal),
                 () => EnsureArg.IsNot(sa, Sa, ordinal, ParamName));
 
             // Validate with comparer (order is reversed)
-            IComparer<string> ignoreCase = StringComparer.OrdinalIgnoreCase;
+            var ignoreCase = StringComparer.OrdinalIgnoreCase;
             ShouldThrow<ArgumentException>(
                 string.Format(ExceptionMessages.Comp_IsNot_Failed, sa, Sa),
                 () => Ensure.That(sa, ParamName).IsNot(Sa, ignoreCase),
@@ -408,7 +408,7 @@ namespace UnitTests
         public void AssertIsRangeToHighScenario<T>(T value, T limit, params Action[] actions)
             => ShouldThrow<ArgumentOutOfRangeException>(string.Format(ExceptionMessages.Comp_IsNotInRange_ToHigh, value, limit), actions);
 
-        public class CustomComparable : IComparable<CustomComparable>
+        public class CustomComparable : IComparable<CustomComparable>, IEquatable<CustomComparable>
         {
             private readonly int _value;
 
@@ -423,6 +423,10 @@ namespace UnitTests
                 var y = other._value;
 
                 return x.CompareTo(y);
+            }
+            public bool Equals(CustomComparable other)
+            {
+                return this.CompareTo(other) == 0;
             }
 
             public static implicit operator CustomComparable(int value) => new CustomComparable(value);

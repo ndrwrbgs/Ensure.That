@@ -8,7 +8,7 @@ namespace EnsureThat
     public static class EnsureComparableExtensions
     {
         [DebuggerStepThrough]
-        public static void Is<T>(this Param<T> param, T expected) where T : IComparable<T>
+        public static void Is<T>(this Param<T> param, T expected) where T : IEquatable<T>
         {
             if (!Ensure.IsActive)
                 return;
@@ -18,7 +18,7 @@ namespace EnsureThat
         }
 
         [DebuggerStepThrough]
-        public static void Is<T>(this Param<T> param, T expected, IComparer<T> comparer)
+        public static void Is<T>(this Param<T> param, T expected, IEqualityComparer<T> comparer)
         {
             if (!Ensure.IsActive)
                 return;
@@ -28,7 +28,7 @@ namespace EnsureThat
         }
 
         [DebuggerStepThrough]
-        public static void IsNot<T>(this Param<T> param, T expected) where T : IComparable<T>
+        public static void IsNot<T>(this Param<T> param, T expected) where T : IEquatable<T>
         {
             if (!Ensure.IsActive)
                 return;
@@ -38,7 +38,7 @@ namespace EnsureThat
         }
 
         [DebuggerStepThrough]
-        public static void IsNot<T>(this Param<T> param, T expected, IComparer<T> comparer)
+        public static void IsNot<T>(this Param<T> param, T expected, IEqualityComparer<T> comparer)
         {
             if (!Ensure.IsActive)
                 return;

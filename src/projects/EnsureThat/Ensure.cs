@@ -25,6 +25,9 @@ namespace EnsureThat
         public static ComparableArg Comparable { get; } = new ComparableArg();
 
         [NotNull]
+        public static EquatableArg Equatable { get; } = new EquatableArg();
+
+        [NotNull]
         public static GuidArg Guid { get; } = new GuidArg();
 
         [NotNull]
