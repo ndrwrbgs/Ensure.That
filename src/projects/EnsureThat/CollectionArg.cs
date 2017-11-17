@@ -383,6 +383,20 @@ namespace EnsureThat
             return value;
         }
 
+        [DebuggerStepThrough]
+        public T HasAny<T, TItem>([NotNull, ValidatedNotNull]T value, Func<TItem, bool> predicate, string paramName = Param.DefaultName) where T : ICollection<TItem>
+        {
+            if (!Ensure.IsActive)
+                return value;
+
+            Ensure.Any.IsNotNull(value, paramName);
+
+            if (!value.Any(predicate))
+                throw new ArgumentException(ExceptionMessages.Collections_Any_Failed, paramName);
+
+            return value;
+        }
+
         [NotNull]
         [DebuggerStepThrough]
         public IList<T> Contains<T>([NotNull, ValidatedNotNull]IList<T> value, T item, [InvokerParameterName] string paramName = Param.DefaultName)
@@ -416,6 +430,21 @@ namespace EnsureThat
         [NotNull]
         [DebuggerStepThrough]
         public T[] Contains<T>([NotNull, ValidatedNotNull]T[] value, T item, [InvokerParameterName] string paramName = Param.DefaultName)
+        {
+            if (!Ensure.IsActive)
+                return value;
+
+            Ensure.Any.IsNotNull(value, paramName);
+
+            if (!value.Contains(item))
+                throw new ArgumentException(ExceptionMessages.Collections_Contains_Failed, paramName);
+
+            return value;
+        }
+
+        [NotNull]
+        [DebuggerStepThrough]
+        public T Contains<T, TItem>([NotNull, ValidatedNotNull]T value, TItem item, [InvokerParameterName] string paramName = Param.DefaultName) where T : ICollection<TItem>
         {
             if (!Ensure.IsActive)
                 return value;
