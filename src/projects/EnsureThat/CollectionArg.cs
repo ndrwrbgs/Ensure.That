@@ -383,8 +383,9 @@ namespace EnsureThat
             return value;
         }
 
+        [NotNull]
         [DebuggerStepThrough]
-        public T HasAny<T, TItem>([NotNull, ValidatedNotNull]T value, Func<TItem, bool> predicate, string paramName = Param.DefaultName) where T : ICollection<TItem>
+        public T HasAny<T, TItem>([NotNull, ValidatedNotNull]T value, [NotNull] Func<TItem, bool> predicate, string paramName = Param.DefaultName) where T : ICollection<TItem>
         {
             if (!Ensure.IsActive)
                 return value;
