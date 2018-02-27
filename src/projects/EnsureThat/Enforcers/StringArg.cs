@@ -153,6 +153,34 @@ namespace EnsureThat.Enforcers
             return value;
         }
 
+        [NotNull]
+        public string StartsWith([ValidatedNotNull]string value, [NotNull] string expectedStartsWith, [InvokerParameterName] string paramName = null, OptsFn optsFn = null)
+        {
+            Ensure.Any.IsNotNull(value, paramName, optsFn);
+
+            if (!value.StartsWith(expectedStartsWith))
+                throw Ensure.ExceptionFactory.ArgumentException(
+                    string.Format(ExceptionMessages.Strings_StartsWith_Failed, value, expectedStartsWith),
+                    paramName,
+                    optsFn);
+
+            return value;
+        }
+
+        [NotNull]
+        public string StartsWith([ValidatedNotNull]string value, [NotNull] string expectedStartsWith, StringComparison comparisonType, [InvokerParameterName] string paramName = null, OptsFn optsFn = null)
+        {
+            Ensure.Any.IsNotNull(value, paramName, optsFn);
+
+            if (!value.StartsWith(expectedStartsWith, comparisonType))
+                throw Ensure.ExceptionFactory.ArgumentException(
+                    string.Format(ExceptionMessages.Strings_StartsWith_Failed, value, expectedStartsWith),
+                    paramName,
+                    optsFn);
+
+            return value;
+        }
+
         private static bool StringEquals(string x, string y, StringComparison comparison) => string.Equals(x, y, comparison);
 
         private static bool StringEquals(string x, string y) => string.Equals(x, y);
