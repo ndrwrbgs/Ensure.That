@@ -5,6 +5,8 @@ using JetBrains.Annotations;
 
 namespace EnsureThat
 {
+    using System.Runtime.CompilerServices;
+
     public static class Ensure
     {
         internal static readonly ExceptionFactory ExceptionFactory = new ExceptionFactory();
@@ -69,6 +71,11 @@ namespace EnsureThat
         /// <param name="name"></param>
         /// <param name="optsFn"></param>
         /// <returns></returns>
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static StringParam That2([NoEnumeration]string value, string name = null)
+            => new StringParam(name, value);
+
         [Pure]
         public static Param<T> That<T>([NoEnumeration]T value, string name = null, OptsFn optsFn = null)
             => new Param<T>(name, value, optsFn);

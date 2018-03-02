@@ -3,9 +3,12 @@ using JetBrains.Annotations;
 
 namespace EnsureThat.Enforcers
 {
+    using System.Runtime.CompilerServices;
+
     public sealed class AnyArg
     {
         [NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T IsNotNull<T>([NoEnumeration, ValidatedNotNull] T value, [InvokerParameterName] string paramName = null, OptsFn optsFn = null)
         {
             if (value == null)

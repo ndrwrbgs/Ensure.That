@@ -3,6 +3,18 @@ using JetBrains.Annotations;
 
 namespace EnsureThat
 {
+    public struct StringParam
+    {
+        public readonly string Name;
+        public readonly string Value;
+
+        public StringParam(string name, string value)
+        {
+            Name = name;
+            Value = value;
+        }
+    }
+
     public struct Param<T>
     {
         public readonly string Name;

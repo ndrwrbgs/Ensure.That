@@ -4,10 +4,16 @@ using JetBrains.Annotations;
 
 namespace EnsureThat
 {
+    using System.Runtime.CompilerServices;
+
     public static class EnsureStringExtensions
     {
         public static void IsNotNullOrWhiteSpace(this Param<string> param)
             => Ensure.String.IsNotNullOrWhiteSpace(param.Value, param.Name, param.OptsFn);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void IsNotNullOrWhiteSpace(this StringParam param)
+            => Ensure.String.IsNotNullOrWhiteSpace(param.Value, param.Name);
 
         public static void IsNotNullOrEmpty(this Param<string> param)
             => Ensure.String.IsNotNullOrEmpty(param.Value, param.Name, param.OptsFn);

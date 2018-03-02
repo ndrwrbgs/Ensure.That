@@ -5,6 +5,8 @@ using JetBrains.Annotations;
 
 namespace EnsureThat.Enforcers
 {
+    using System.Runtime.CompilerServices;
+
     public sealed class StringArg
     {
         [NotNull]
@@ -16,10 +18,9 @@ namespace EnsureThat.Enforcers
         }
 
         [NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string IsNotNullOrWhiteSpace([ValidatedNotNull]string value, [InvokerParameterName] string paramName = null, OptsFn optsFn = null)
         {
-            Ensure.Any.IsNotNull(value, paramName, optsFn);
-
             if (string.IsNullOrWhiteSpace(value))
                 throw Ensure.ExceptionFactory.ArgumentException(ExceptionMessages.Strings_IsNotNullOrWhiteSpace_Failed, paramName, optsFn);
 
