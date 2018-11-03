@@ -52,13 +52,21 @@ namespace EnsureThat
         public static void IsString(this TypeParam param) => IsOfType(param, Types.StringType);
 
         [DebuggerStepThrough]
-        public static void IsOfType(this TypeParam param, [NotNull] Type type)
+        public static void IsOfType(this TypeParam param, [NotNull] Type type, bool allowSubclasses = false)
         {
             if (!Ensure.IsActive)
                 return;
 
-            if (param.Type != type)
-                throw ExceptionFactory.CreateForParamValidation(param, ExceptionMessages.Types_IsOfType_Failed.Inject(type.FullName, param.Type.FullName));
+            if (allowSubclasses)
+            {
+                if (!type.IsAssignableFrom(param.Type))
+                    throw new ArgumentException(ExceptionMessages.Types_IsOfType_Failed.Inject(type.FullName, param.Type.FullName), param.Name);
+            }
+            else
+            {
+                if (param.Type != type)
+                    throw new ArgumentException(ExceptionMessages.Types_IsOfTypeExactly_Failed.Inject(type.FullName, param.Type.FullName), param.Name);
+            }
         }
 
         [DebuggerStepThrough]

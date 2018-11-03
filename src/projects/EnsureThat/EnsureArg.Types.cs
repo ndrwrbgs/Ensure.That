@@ -89,13 +89,13 @@ namespace EnsureThat
 
         [NotNull]
         [DebuggerStepThrough]
-        public static T IsOfType<T>([ValidatedNotNull] T param, Type expectedType, [InvokerParameterName] string paramName = Param.DefaultName)
-            => Ensure.Type.IsOfType(param, expectedType, paramName);
+        public static T IsOfType<T>([ValidatedNotNull] T param, Type expectedType, bool allowSubclasses = false, [InvokerParameterName] string paramName = Param.DefaultName)
+            => Ensure.Type.IsOfType(param, expectedType, allowSubclasses, paramName);
 
         [NotNull]
         [DebuggerStepThrough]
-        public static Type IsOfType([ValidatedNotNull]Type param, Type expectedType, [InvokerParameterName] string paramName = Param.DefaultName)
-            => Ensure.Type.IsOfType(param, expectedType, paramName);
+        public static Type IsOfType([ValidatedNotNull]Type param, Type expectedType, bool allowSubclasses, [InvokerParameterName] string paramName = Param.DefaultName)
+            => Ensure.Type.IsOfType(param, expectedType, allowSubclasses, paramName);
 
         [NotNull]
         [DebuggerStepThrough]
