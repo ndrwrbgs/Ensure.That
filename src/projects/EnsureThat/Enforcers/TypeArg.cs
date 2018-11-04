@@ -109,9 +109,9 @@ namespace EnsureThat.Enforcers
             if (allowSubclasses)
             {
 #if NETSTANDARD1_1
-                bool isSubclass = param.GetTypeInfo().IsAssignableFrom(expectedType.GetTypeInfo());
+                bool isSubclass = expectedType.GetTypeInfo().IsAssignableFrom(param.GetTypeInfo());
 #else
-                bool isSubclass = param.IsAssignableFrom(expectedType);
+                bool isSubclass = expectedType.IsAssignableFrom(param);
 #endif
                 if (!isSubclass)
                     throw Ensure.ExceptionFactory.ArgumentException(
@@ -123,7 +123,7 @@ namespace EnsureThat.Enforcers
             {
                 if (param != expectedType)
                     throw Ensure.ExceptionFactory.ArgumentException(
-                        string.Format(ExceptionMessages.Types_IsOfType_Failed, expectedType.FullName, param.FullName),
+                        string.Format(ExceptionMessages.Types_IsOfTypeExactly_Failed, expectedType.FullName, param.FullName),
                         paramName,
                         optsFn);
             }
