@@ -59,7 +59,12 @@ namespace EnsureThat
 
             if (allowSubclasses)
             {
-                if (!type.IsAssignableFrom(param.Type))
+#if NETSTANDARD1_1
+                bool isSubclass = type.GetTypeInfo().IsAssignableFrom(param.Type.GetTypeInfo());
+#else
+                bool isSubclass = type.IsAssignableFrom(param.Type);
+#endif
+                if (!isSubclass)
                     throw new ArgumentException(ExceptionMessages.Types_IsOfType_Failed.Inject(type.FullName, param.Type.FullName), param.Name);
             }
             else

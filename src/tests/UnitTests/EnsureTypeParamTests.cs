@@ -18,14 +18,14 @@ namespace UnitTests
         public void IsOfType_WhenNotTypeOf_ThrowsArgumentException() => AssertIsOfTypeScenario(
             NonBogusType, BogusType,
             () => Ensure.ThatTypeFor(new Bogus(), ParamName).IsOfType(NonBogusType),
-            () => EnsureArg.IsOfType(typeof(Bogus), NonBogusType, ParamName),
-            () => EnsureArg.IsOfType(new Bogus(), NonBogusType, ParamName));
+            () => EnsureArg.IsOfType(typeof(Bogus), NonBogusType, paramName: ParamName),
+            () => EnsureArg.IsOfType(new Bogus(), NonBogusType, paramName: ParamName));
 
         [Fact]
         public void IsOfType_WhenIsCorrectType_It_should_not_throw() => ShouldNotThrow(
             () => Ensure.ThatTypeFor(new Bogus(), ParamName).IsOfType(BogusType),
-            () => EnsureArg.IsOfType(BogusType, BogusType, ParamName),
-            () => EnsureArg.IsOfType(new Bogus(), BogusType, ParamName));
+            () => EnsureArg.IsOfType(BogusType, BogusType, paramName: ParamName),
+            () => EnsureArg.IsOfType(new Bogus(), BogusType, paramName: ParamName));
 
         [Fact]
         public void IsNotOfType_WhenTypeOf_ThrowsArgumentException() => ShouldThrow<ArgumentException>(

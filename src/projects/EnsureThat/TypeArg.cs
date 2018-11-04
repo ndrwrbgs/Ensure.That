@@ -118,8 +118,12 @@ namespace EnsureThat
 
             if (allowSubclasses)
             {
-                // TODO: Not supported in NETSTANDARD1_1
-                if (!expectedType.IsAssignableFrom(param))
+#if NETSTANDARD1_1
+                bool isSubclass = expectedType.GetTypeInfo().IsAssignableFrom(param.GetTypeInfo());
+#else
+                bool isSubclass = expectedType.IsAssignableFrom(param);
+#endif
+                if (!isSubclass)
                     throw new ArgumentException(ExceptionMessages.Types_IsOfType_Failed.Inject(expectedType.FullName, param.FullName), paramName);
             }
             else
