@@ -5,6 +5,7 @@ namespace UnitTests
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
@@ -70,16 +71,72 @@ namespace UnitTests
 
             foreach (var ensureThatMethod in ensureThatMethods)
             {
+                // Exclusions - found in Ensure.That but not EnsureArg
+                if (string.Equals(ensureThatMethod.methodName, "HasItems")
+                    && string.Equals(ensureThatMethod.forTypeWithConstraints.ToString(), "System.Collections.ObjectModel.Collection`1[T]"))
+                {
+                    continue;
+                }
+                if (string.Equals(ensureThatMethod.methodName, "HasItems")
+                    && string.Equals(ensureThatMethod.forTypeWithConstraints.ToString(), "System.Collections.Generic.List`1[T]"))
+                {
+                    continue;
+                }
+                if (string.Equals(ensureThatMethod.methodName, "HasItems")
+                    && string.Equals(ensureThatMethod.forTypeWithConstraints.ToString(), "System.Collections.Generic.HashSet`1[T]"))
+                {
+                    continue;
+                }
+                if (string.Equals(ensureThatMethod.methodName, "HasItems")
+                    && string.Equals(ensureThatMethod.forTypeWithConstraints.ToString(), "System.Collections.Generic.Dictionary`2[TKey,TValue]"))
+                {
+                    continue;
+                }
+                if (string.Equals(ensureThatMethod.methodName, "ContainsKey")
+                    && string.Equals(ensureThatMethod.forTypeWithConstraints.ToString(), "System.Collections.Generic.Dictionary`2[TKey,TValue]"))
+                {
+                    continue;
+                }
+                if (string.Equals(ensureThatMethod.methodName, "HasAny")
+                    && string.Equals(ensureThatMethod.forTypeWithConstraints.ToString(), "System.Collections.Generic.List`1[T]"))
+                {
+                    continue;
+                }
+                if (string.Equals(ensureThatMethod.methodName, "HasAny")
+                    && string.Equals(ensureThatMethod.forTypeWithConstraints.ToString(), "System.Collections.ObjectModel.Collection`1[T]"))
+                {
+                    continue;
+                }
+                if (string.Equals(ensureThatMethod.methodName, "HasAny")
+                    && string.Equals(ensureThatMethod.forTypeWithConstraints.ToString(), "System.Collections.Generic.IDictionary`2[TKey,TValue]"))
+                {
+                    continue;
+                }
+                if (string.Equals(ensureThatMethod.methodName, "HasAny")
+                    && string.Equals(ensureThatMethod.forTypeWithConstraints.ToString(), "System.Collections.Generic.Dictionary`2[TKey,TValue]"))
+                {
+                    continue;
+                }
+                if (string.Equals(ensureThatMethod.methodName, "IsClass")
+                    && string.Equals(ensureThatMethod.forTypeWithConstraints.ToString(), "T"))
+                {
+                    continue;
+                }
+
                 ensureArgMethods
                     .Any(
                         ensureArgMethod =>
                         {
-                            if (ensureThatMethod.methodName != ensureArgMethod.methodName)
+                            if (!string.Equals(ensureThatMethod.methodName, ensureArgMethod.methodName))
                             {
                                 return false;
                             }
 
-                            if (ensureThatMethod.forTypeWithConstraints != ensureArgMethod.forTypeWithConstraints)
+                            // TODO: Better way to compare these
+                            if (!string.Equals(ensureThatMethod.forTypeWithConstraints.ToString(), ensureArgMethod.forTypeWithConstraints.ToString()))
+                            // == failed
+                            // MetadataToken failed when they came from different nesting levels
+                            //if (ensureThatMethod.forTypeWithConstraints.MetadataToken != ensureArgMethod.forTypeWithConstraints.MetadataToken)
                             {
                                 return false;
                             }
@@ -88,7 +145,7 @@ namespace UnitTests
                             return true;
                         })
                     .Should()
-                    .BeTrue();
+                    .BeTrue(because: $"{ensureThatMethod.methodName}({ensureThatMethod.forTypeWithConstraints}, {string.Join(", ", ensureThatMethod.args.Select(p => p.ToString()))})" + $" is not matched in EnsureArg");
             }
         }
 
@@ -110,16 +167,29 @@ namespace UnitTests
                 ParameterInfo[] parameterInfos = methodInfo.GetParameters();
                 if (parameterInfos.Length == 0) continue;
 
-                Type parameterType = parameterInfos[0].ParameterType;
-                // TODO: Validate it has constraints - it does, on Generic* properties
-
                 // Skip paramName and optsFn (and the first argument)
                 var otherParameters = parameterInfos
                     .Skip(1)
                     .Take(parameterInfos.Length - 3)
                     .ToArray();
 
-                yield return (forTypeWithConstraints: parameterType,
+                var firstParameter = parameterInfos[0].ParameterType;
+
+                if (firstParameter.IsGenericParameter)
+                {
+                    var constraintsOnT = firstParameter.GetGenericParameterConstraints();
+                    if (constraintsOnT.Length == 1)
+                    {
+                        yield return (
+                            forTypeWithConstraints: constraintsOnT.Single(),
+                            methodName: methodInfo.Name,
+                            args: otherParameters);
+                        continue;
+                    }
+                }
+
+                yield return (
+                    forTypeWithConstraints: firstParameter,
                     methodName: methodInfo.Name,
                     args: otherParameters);
             }
@@ -162,6 +232,8 @@ namespace UnitTests
                             args: parameterInfos.Skip(1).ToArray());
                         continue;
                     }
+                    // TODO: Handle GenericParameterAttributes which don't show up in GetGenericParameterConstraints
+                    //if (firstParameter.GenericTypeArguments.First().GenericParameterAttributes == GenericParameterAttributes.)
                 }
 
                 yield return (
