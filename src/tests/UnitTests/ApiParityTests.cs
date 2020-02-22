@@ -5,12 +5,14 @@ namespace UnitTests
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
 
     using EnsureThat;
 
     using FluentAssertions;
+    using Xunit.Abstractions;
     using Xunit.Sdk;
 
     /// <summary>
@@ -26,6 +28,40 @@ namespace UnitTests
     /// </summary> 
     public class ApiParityTests
     {
+        private readonly ITestOutputHelper output;
+
+        public ApiParityTests(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
+
+        [Fact]
+        public void EnumerateEnsureThat()
+        {
+            foreach (var method in GetEnsureThatMethods())
+            {
+                this.output.WriteLine($"{method.methodName}({method.forTypeWithConstraints}, {string.Join(", ", method.args.Select(p => p.ToString()))})");
+            }
+        }
+
+        [Fact]
+        public void EnumerateEnsureArg()
+        {
+            foreach (var method in GetEnsureArgMethods())
+            {
+                this.output.WriteLine($"{method.methodName}({method.forTypeWithConstraints}, {string.Join(", ", method.args.Select(p => p.ToString()))})");
+            }
+        }
+        [Fact]
+        public void EnumerateEnsure()
+        {
+            //foreach (var method in GetEnsureMethods())
+            //{
+            //    this.output.WriteLine($"{method.methodName}({method.forTypeWithConstraints}, {string.Join(", ", method.args.Select(p => p.ToString()))})");
+            //}
+        }
+
+
         [Fact]
         public void EnsureThatImplementedInEnsureArg()
         {
@@ -95,7 +131,7 @@ namespace UnitTests
                 .ExportedTypes
                 .SelectMany(type => type.GetMethods())
                 .Where(method => method.IsStatic)
-                .Where(m => m.Name.Contains("IsNotNull")))
+            )
             {
                 // Filter to Param<T> methods
                 ParameterInfo[] parameterInfos = methodInfo.GetParameters();
@@ -103,13 +139,29 @@ namespace UnitTests
 
 
                 var firstParameter = parameterInfos[0].ParameterType;
-                // TODO: Best if we could validate 'this' but quick google yielded nothing (and I know it's a compiler trick, so might not have anything via reflection)
 
-                if (!firstParameter.IsGenericTypeDefinition) continue;
+                if (!firstParameter.IsByRef) continue;
 
-                if (firstParameter.GetGenericTypeDefinition() != typeof(Param<>))
+                firstParameter = firstParameter.GetElementType();
+
+                if (!firstParameter.IsGenericType) continue;
+
+                if (firstParameter.GetGenericTypeDefinition() != typeof(Param<>)) // TODO: StringParam and any other Param types
                 {
                     continue;
+                }
+
+                if (firstParameter.GenericTypeArguments.First().IsGenericParameter)
+                {
+                    var constraintsOnT = firstParameter.GenericTypeArguments.First().GetGenericParameterConstraints();
+                    if (constraintsOnT.Length == 1)
+                    {
+                        yield return (
+                            forTypeWithConstraints: constraintsOnT.Single(),
+                            methodName: methodInfo.Name,
+                            args: parameterInfos.Skip(1).ToArray());
+                        continue;
+                    }
                 }
 
                 yield return (
